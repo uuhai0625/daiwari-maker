@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>
+  (function() {
+    var GA_ID = 'G-D01C6ZTRMJ';
+    var isLocalDev = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+    if (isLocalDev) return;
+    var gaQ = new URLSearchParams(location.search); if (gaQ.get('obs') === '1' || gaQ.get('no_ga') === '1') return;
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', GA_ID);
+    document.addEventListener('click', function(e) {
+      var a = e.target && e.target.closest ? e.target.closest('a[href*="booth.pm"]') : null;
+      if (!a) return;
+      gtag('event', 'booth_click', { link_url: a.href, link_id: a.id || '', link_text: (a.textContent || '').trim().slice(0, 40) });
+    });
+  })();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="同人誌・コピー本の台割表を無料で作成。本文のページ数と扉・目次・本編・あとがき・奥付などの区切りを入れるだけで、右綴じ・左綴じの見開き台割を色分け表示。中綴じコピー本の面付け表(どのページを同じ紙に印刷するか)も無料で出せます。印刷して台割表テンプレートの代わりに。登録不要。">
+<link rel="canonical" href="https://uuhai0625.github.io/daiwari-maker/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="台割作成ツール(同人誌・コピー本の台割表と面付け表を作成・登録不要・無料)">
+<meta property="og:description" content="同人誌・コピー本の台割表を無料で作成。本文のページ数と扉・目次・本編・あとがき・奥付などの区切りを入れるだけで、右綴じ・左綴じの見開き台割を色分け表示。中綴じコピー本の面付け表(どのページを同じ紙に印刷するか)も無料で出せます。印刷して台割表テンプレートの代わりに。登録不要。">
+<meta property="og:url" content="https://uuhai0625.github.io/daiwari-maker/">
+<title>台割作成ツール(同人誌・コピー本の台割表と面付け表を作成・登録不要・無料)</title>
+<style>
+  :root {
+    --bg: #f6f4f1;
+    --panel: #ffffff;
+    --border: #e3ddd4;
+    --field-border: #8a8378;
+    --text: #2b2825;
+    --muted: #5f5850;
+    --accent: #b0573a;
+    --accent-dark: #8e4229;
+    --soft: #f8ece6;
+    --warn-bg: #fff4e0;
+    --warn-text: #7a4b00;
+    --danger: #b3261e;
+    --locked: #b4ada3;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  header { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: #fff; padding: 24px 20px 18px; text-align: center; }
+  header h1 { margin: 0 0 6px; font-size: 1.4rem; }
+  header p { margin: 0; font-size: .9rem; }
+  main { max-width: 960px; margin: 0 auto; padding: 22px 16px 50px; }
+  section.card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 18px; }
+  section.card h2 { margin: 0 0 6px; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .desc { color: var(--muted); font-size: .84rem; margin: 0 0 12px; }
+  .fine { color: var(--muted); font-size: .8rem; margin: 8px 0 0; }
+  .badge { display: inline-block; font-size: .7rem; padding: 2px 8px; border-radius: 999px; background: #fff1cc; color: #7a5600; font-weight: bold; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  .hidden { display: none !important; }
+  label.field { display: block; margin-bottom: 12px; }
+  .lbl { font-size: .85rem; font-weight: bold; display: block; }
+  .hint { font-size: .78rem; color: var(--muted); font-weight: normal; display: block; margin-top: 2px; }
+  input[type=text], input[type=number], input[type=date], select { width: 100%; margin-top: 5px; padding: 8px 10px; min-height: 44px; border: 1px solid var(--field-border); border-radius: 8px; font-size: 1rem; font-family: inherit; background: #fff; color: var(--text); }
+  .row3 { display: flex; gap: 12px; }
+  .row3 > * { flex: 1; min-width: 0; }
+  fieldset.plain { border: none; padding: 0; margin: 0 0 12px; }
+  fieldset.plain legend { font-size: .85rem; font-weight: bold; padding: 0; margin-bottom: 5px; }
+  .seg { display: flex; gap: 8px; flex-wrap: wrap; }
+  .seg label { flex: 1; min-width: 130px; min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--field-border); border-radius: 8px; padding: 6px 10px; font-size: .86rem; cursor: pointer; background: #fff; }
+  .seg label.on { border-color: var(--accent); background: var(--soft); font-weight: bold; }
+  .seg label:focus-within { outline: 2px solid var(--accent); outline-offset: 1px; }
+  label.check { display: flex; align-items: center; gap: 8px; min-height: 44px; font-size: .86rem; cursor: pointer; }
+  label.check input { width: 20px; height: 20px; margin: 0; flex-shrink: 0; }
+  dl.terms { margin: 4px 0 0; font-size: .8rem; color: var(--muted); display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; }
+  dl.terms dt { font-weight: bold; }
+  dl.terms dd { margin: 0; }
+
+  .segs-head, .seg-row { display: grid; grid-template-columns: 84px 84px 1fr 120px 44px; gap: 8px; align-items: end; }
+  .segs-head { font-size: .78rem; color: var(--muted); font-weight: bold; }
+  .seg-row { margin-top: 8px; }
+  .seg-row label { display: block; min-width: 0; }
+  .seg-row input, .seg-row select { margin-top: 0; }
+  .seg-row .mlbl { display: none; font-size: .74rem; color: var(--muted); font-weight: bold; }
+  .seg-row .rm { min-height: 44px; border: 1px solid var(--field-border); border-radius: 8px; background: #fff; cursor: pointer; font-size: 1rem; }
+
+  .btn-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .btn { min-height: 44px; padding: 9px 16px; border-radius: 8px; font-size: .88rem; cursor: pointer; border: 1px solid var(--field-border); background: #fff; color: var(--text); font-family: inherit; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: bold; }
+  .btn:focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 2px; }
+  .status { font-size: .8rem; color: var(--muted); margin-top: 6px; min-height: 1.2em; }
+  .warn { background: var(--warn-bg); color: var(--warn-text); border-radius: 8px; padding: 8px 12px; font-size: .83rem; margin: 8px 0 0; }
+
+  /* 台割表 */
+  .summary { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: .88rem; margin-bottom: 10px; }
+  .summary b { color: var(--accent-dark); font-size: 1.05rem; }
+  .spreads { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 14px 12px; margin-top: 10px; }
+  .spread { display: flex; gap: 2px; }
+  .spread.rtl { flex-direction: row-reverse; }
+  .spread .pg { flex: 1; min-width: 0; min-height: 92px; border: 1px solid #cfc7bb; border-radius: 4px; padding: 4px 6px; background: #fff; display: flex; flex-direction: column; font-size: .76rem; }
+  .spread .pg.empty { visibility: hidden; }
+  .spread .pg.cover { background: repeating-linear-gradient(135deg, #f3efe9, #f3efe9 6px, #ebe5dc 6px, #ebe5dc 12px); }
+  .spread .pg .no { font-weight: bold; font-size: .82rem; }
+  .spread .pg .lb { margin-top: 2px; line-height: 1.35; word-break: break-all; }
+  .spread .pg.cont .lb { color: rgba(0,0,0,.55); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .8rem; margin-top: 12px; }
+  .legend i { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 4px; border: 1px solid rgba(0,0,0,.15); }
+
+  table.imp { width: 100%; border-collapse: collapse; font-size: .84rem; margin-top: 8px; }
+  table.imp th, table.imp td { border: 1px solid var(--border); padding: 6px 8px; text-align: center; white-space: pre-line; }
+  table.imp th { background: #f4efe8; font-weight: bold; font-size: .78rem; }
+  .table-wrap { overflow-x: auto; }
+
+  .locked-panel { border: 1px dashed var(--locked); border-radius: 10px; padding: 16px; text-align: center; color: var(--muted); background: #fbfaf8; }
+  .locked-panel .feat-list { text-align: left; max-width: 560px; margin: 10px auto; font-size: .85rem; padding-left: 1.2em; }
+  .buy-btn { display: inline-block; margin-top: 8px; background: var(--accent-dark); color: #fff; font-weight: bold; padding: 11px 22px; border-radius: 999px; text-decoration: none; font-size: .9rem; }
+  
+  footer { max-width: 960px; margin: 0 auto; padding: 0 16px 40px; font-size: .8rem; color: var(--muted); }
+  footer a { color: var(--muted); }
+
+  @media (max-width: 600px) {
+    .row3 { flex-direction: column; gap: 0; }
+    .segs-head { display: none; }
+    .seg-row { grid-template-columns: 1fr 1fr 44px; padding: 10px 0 12px; border-bottom: 1px solid var(--border); margin-top: 0; }
+    .seg-row .mlbl { display: block; }
+    .seg-row .f-lab { grid-column: 1 / 4; grid-row: 2; }
+    .seg-row .f-col { grid-column: 1 / 3; grid-row: 3; }
+    
+    section.card { padding: 16px 14px; }
+    .spreads { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  }
+  @media print {
+    header, .no-print, #pro-section, footer, .btn-row, .status { display: none !important; }
+    body { background: #fff; }
+    section.card { border: none; padding: 0; }
+    .spread { break-inside: avoid; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>台割作成ツール</h1>
+  <p>ページ数と内容の区切りを入れるだけで、同人誌・コピー本の台割表と面付け表を作れます。登録不要・無料</p>
+</header>
+
+<main>
+
+  <section class="card no-print">
+    <h2>① 本の仕様</h2>
+    <div class="row3">
+      <label class="field">
+        <span class="lbl">本文のページ数(表紙を除く)</span>
+        <input type="number" id="in-pages" min="2" max="1000" step="2" value="32" inputmode="numeric">
+        <span class="hint">2〜1000の偶数。表紙の4ページは含めません</span>
+      </label>
+      <label class="field">
+        <span class="lbl">綴じ方</span>
+        <select id="in-binding"><option value="perfect">無線綴じ(背をのりで固める)</option><option value="saddle">中綴じ(二つ折りして中央をホチキス留め)</option></select>
+      </label>
+      <label class="field">
+        <span class="lbl">本の名前(任意)</span>
+        <input type="text" id="in-title" maxlength="40" placeholder="例) 夏の新刊">
+      </label>
+    </div>
+    <fieldset class="plain">
+      <legend>綴じ方向</legend>
+      <div class="seg" id="dirSeg">
+        <label><input type="radio" name="dir" value="right" checked> 右綴じ(縦書き・漫画)</label>
+        <label><input type="radio" name="dir" value="left"> 左綴じ(横書き)</label>
+      </div>
+    </fieldset>
+    <label class="check"><input type="checkbox" id="opt-cover" checked> 表紙(表1〜表4)も台割に入れる</label>
+    <dl class="terms">
+      <dt>表1</dt><dd>表紙</dd><dt>表2</dt><dd>表紙の裏</dd><dt>表3</dt><dd>裏表紙の裏</dd><dt>表4</dt><dd>裏表紙</dd>
+    </dl>
+  </section>
+
+  <section class="card no-print">
+    <h2>② 内容の区切り</h2>
+    <p class="desc">何ページ目から何ページ目に何が入るかを入れます(ページは表紙を除いた本文の1ページ目から数えます)。1ページだけなら開始と終了を同じにしてください。入っていないページは「未定」と表示します。</p>
+    <div class="segs-head" aria-hidden="true"><span>開始P</span><span>終了P</span><span>内容</span><span>色</span><span></span></div>
+    <div id="segRows"></div>
+    <div class="btn-row">
+      <button class="btn" type="button" id="addSeg">+ 行を追加</button>
+      <button class="btn" type="button" id="templateBtn">よくある構成を入れる</button>
+      <button class="btn" type="button" id="resetBtn">すべてリセット</button>
+    </div>
+  </section>
+
+  <section class="card" id="result-card">
+    <h2>③ 台割表<span id="bookTitle" style="font-weight:normal;"></span></h2>
+    <div class="summary" id="summary"></div>
+    <div id="warns" aria-live="polite"></div>
+    <p class="fine" id="readNote" style="margin:8px 0 0;"></p>
+    <div class="spreads" id="spreads"></div>
+    <div class="legend" id="legend"></div>
+    <div class="btn-row no-print">
+      <button class="btn primary" type="button" id="printBtn">印刷する</button>
+      <button class="btn" type="button" id="copyBtn">テキストでコピー</button>
+    </div>
+    <div class="status no-print" id="copyStatus" role="status"></div>
+  </section>
+
+  <section class="card" id="imp-section">
+    <h2>④ コピー本の面付け表</h2>
+    <p class="desc" id="impDesc"></p>
+    <div id="impOut"></div>
+  </section>
+
+  <section class="card no-print" id="pro-section">
+    <h2>合同誌の進行管理・画像/CSV書き出し・複数冊の保存 <span class="badge">買い切り版 ¥100</span></h2>
+    <div class="locked-panel">
+      <p>このページの機能は無料でそのまま使えます。買い切り版(ダウンロード購入)では、次の機能が増えます:</p>
+      <ul class="feat-list">
+        <li><strong>合同誌の進行管理</strong>: 区切りごとに担当者・締切・進捗(未着手/作業中/完了)を入れられ、台割表にも担当者と完了マークが出ます</li>
+        <li><strong>担当者別のまとめ</strong>: 誰が何ページ担当か、完了数、いちばん近い締切と締切超過がひと目で分かります</li>
+        <li><strong>台割表のPNG書き出し</strong>とCSV出力(担当者・締切・進捗つき)。メンバーへの共有に</li>
+        <li><strong>複数冊の保存</strong>: 新刊・既刊・合同誌など、台割を名前をつけて保存・呼び出し</li>
+      </ul>
+      <a class="buy-btn" href="https://uuhai0625.booth.pm/items/8932411" id="buyLink" target="_blank" rel="noopener">買い切り版を見る(BOOTH・新しいタブ)</a>
+    </div>
+  </section>
+
+  
+
+</main>
+
+<footer>
+  <p id="privacyNote">本ツールは完全にブラウザ内で動作し、入力内容はどこにも送信されません(このブラウザ内にだけ自動保存されます)。</p>
+  <p>同人誌づくりには無料の<a href="https://uuhai0625.github.io/genko-page-calc/" target="_blank" rel="noopener">原稿用紙換算・小説ページ数計算</a>・<a href="https://uuhai0625.github.io/sehaba-calc/" target="_blank" rel="noopener">同人誌 背幅計算ツール</a>・<a href="https://uuhai0625.github.io/doujin-okuzuke-maker/" target="_blank" rel="noopener">同人誌奥付メーカー</a>もどうぞ。<a href="https://uuhai0625.booth.pm/" target="_blank" rel="noopener">他のツールも見る(BOOTHショップ)</a></p>
+  <p>不具合・ご要望は X <a href="https://x.com/uuhai0625" target="_blank" rel="noopener">@uuhai0625</a> まで。</p>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var EDITION = "free"; // "full" で買い切り完全版
+
+  function track(name, params) {
+    if (!window.dataLayer) return;
+    (function () { window.dataLayer.push(arguments); })("event", name, params || {});
+  }
+  var $ = function (id) { return document.getElementById(id); };
+  function el(tag, attrs, text) {
+    var e = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) { if (k === "class") e.className = attrs[k]; else e.setAttribute(k, attrs[k]); });
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  var COLORS = [
+    { key: "rose", label: "ピンク", c: "#f6c9d3" }, { key: "sky", label: "水色", c: "#c8e0f6" }, { key: "mint", label: "緑", c: "#cdebd6" },
+    { key: "lemon", label: "黄", c: "#f6ebb7" }, { key: "lav", label: "紫", c: "#ddd2f2" }, { key: "peach", label: "オレンジ", c: "#f8d7bd" },
+    { key: "gray", label: "グレー", c: "#e1ded9" }, { key: "white", label: "白(色なし)", c: "#ffffff" }
+  ];
+  function colorObj(k) { return COLORS.filter(function (c) { return c.key === k; })[0] || COLORS[COLORS.length - 1]; }
+  function colorOf(k) { return colorObj(k).c; }
+  var STATUS = { todo: "未着手", wip: "作業中", done: "完了" };
+
+  // ===== 状態 =====
+  function blank() { return { pages: 32, binding: "perfect", dir: "right", cover: true, title: "", segs: [{ from: 1, to: 32, label: "本文", color: "sky", who: "", due: "", status: "todo" }] }; }
+  var state = blank();
+
+  function int(v, d) { var n = Number(v); return Number.isInteger(n) ? n : d; }
+  function sanitize(o) {
+    var s = blank();
+    if (!o || typeof o !== "object") return s;
+    var p = int(o.pages, NaN); if (p >= 2 && p <= 1000) s.pages = p;
+    if (o.binding === "saddle" || o.binding === "perfect") s.binding = o.binding;
+    if (o.dir === "left" || o.dir === "right") s.dir = o.dir;
+    if (typeof o.cover === "boolean") s.cover = o.cover;
+    if (typeof o.title === "string") s.title = o.title.slice(0, 40);
+    if (Array.isArray(o.segs)) {
+      s.segs = o.segs.slice(0, 100).map(function (g) {
+        g = g && typeof g === "object" ? g : {};
+        return { from: Math.max(1, Math.min(1000, int(g.from, 1))), to: Math.max(1, Math.min(1000, int(g.to, 1))), label: typeof g.label === "string" ? g.label.slice(0, 30) : "",
+          color: COLORS.some(function (c) { return c.key === g.color; }) ? g.color : "white",
+          who: typeof g.who === "string" ? g.who.slice(0, 20) : "",
+          due: typeof g.due === "string" && /^\d{4}-\d{2}-\d{2}$/.test(g.due) ? g.due : "",
+          status: Object.prototype.hasOwnProperty.call(STATUS, g.status) ? g.status : "todo" };
+      });
+    }
+    return s;
+  }
+  function totalPages() { return state.pages + (state.cover ? 4 : 0); }
+
+  // ===== ページごとの内容を割り当てる(後の行が優先) =====
+  function assign() {
+    var n = state.pages, map = new Array(n + 1), overlap = false, outOfRange = false;
+    state.segs.forEach(function (g, idx) {
+      var a = Math.min(g.from, g.to), b = Math.max(g.from, g.to);
+      if (b > n) outOfRange = true;
+      for (var p = a; p <= Math.min(b, n); p++) {
+        if (map[p]) overlap = true;
+        map[p] = { label: g.label || "(無題)", color: g.color, start: p === a, idx: idx };
+      }
+    });
+    var unset = 0; for (var q = 1; q <= n; q++) if (!map[q]) unset++;
+    return { map: map, overlap: overlap, outOfRange: outOfRange, unset: unset };
+  }
+
+  // 見開きを読む順に並べる。各見開きは [先に読むページ, 後に読むページ]。
+  // 表1は奇数ページと同じ側(後の位置)、表4は偶数ページと同じ側(先の位置)に1ページだけで置く
+  function spreadList() {
+    var n = state.pages, seq = [], out = [];
+    if (state.cover) out.push([{ kind: "blank" }, { kind: "cover", name: "表1" }]);
+    seq.push(state.cover ? { kind: "cover", name: "表2" } : { kind: "blank" });
+    for (var p = 1; p <= n; p++) seq.push({ kind: "page", no: p });
+    if (state.cover) seq.push({ kind: "cover", name: "表3" });
+    for (var i = 0; i < seq.length; i += 2) out.push([seq[i], seq[i + 1] || { kind: "blank" }]);
+    if (state.cover) out.push([{ kind: "cover", name: "表4" }, { kind: "blank" }]);
+    return out;
+  }
+  var COVER_LABEL = { "表1": "表紙", "表2": "表紙の裏", "表3": "裏表紙の裏", "表4": "裏表紙" };
+  function slotName(sl) { return sl.kind === "cover" ? sl.name : sl.kind === "page" ? "P" + sl.no : ""; }
+
+  // 買い切り版で担当者などを足すための差し込み口(無料版では何もしない)
+  var decorate = function () {};
+  var extraText = function () { return ""; };
+  var refreshProgress = function () {};
+
+  function pageCell(sl, a) {
+    var d = el("div", { class: "pg" });
+    if (sl.kind === "blank") { d.className = "pg empty"; d.setAttribute("aria-hidden", "true"); return d; }
+    if (sl.kind === "cover") {
+      d.className = "pg cover";
+      d.appendChild(el("span", { class: "no" }, sl.name));
+      d.appendChild(el("span", { class: "lb" }, COVER_LABEL[sl.name]));
+      return d;
+    }
+    var info = a.map[sl.no];
+    d.appendChild(el("span", { class: "no" }, "P" + sl.no));
+    if (info) {
+      d.style.background = colorOf(info.color);
+      d.appendChild(el("span", { class: "lb" }, info.label));
+      if (!info.start) d.className = "pg cont";
+      decorate(d, info);
+    } else {
+      d.appendChild(el("span", { class: "lb" }, "未定"));
+    }
+    return d;
+  }
+
+  function render() {
+    var a = assign(), n = state.pages, T = totalPages();
+    $("bookTitle").textContent = state.title ? " — " + state.title : "";
+    var sum = $("summary"); sum.innerHTML = "";
+    function item(k, v) { var s = el("span"); s.appendChild(document.createTextNode(k + " ")); s.appendChild(el("b", null, v)); sum.appendChild(s); }
+    item("本文", n + "P");
+    if (state.cover) item("表紙込み", T + "P");
+    item("綴じ", (state.binding === "saddle" ? "中綴じ" : "無線綴じ") + "・" + (state.dir === "right" ? "右綴じ" : "左綴じ"));
+    if (a.unset) item("未定", a.unset + "P");
+
+    var w = $("warns"); w.innerHTML = "";
+    function warn(t) { w.appendChild(el("p", { class: "warn" }, t)); }
+    if (n % 2 === 1) warn("1枚の紙の表と裏で2ページになるので、本文のページ数は偶数にしてください(今は" + n + "P)。");
+    else if (state.binding === "saddle" && T % 4 !== 0) warn("中綴じは" + (state.cover ? "表紙込みの" : "") + "総ページ数が4の倍数である必要があります(今は" + T + "P)。本文を" + (n + 2) + "P" + (n - 2 >= 2 ? "か" + (n - 2) + "P" : "") + "にすると収まります。");
+    else if (state.binding === "perfect" && n % 4 !== 0) warn("多くの印刷所は無線綴じの本文を4の倍数で受け付けます(2の倍数で受け付ける印刷所もあります)。今は" + n + "Pです。");
+    if (state.binding === "saddle" && T > 40) warn("中綴じはページが多いと開きにくく、中央のページが外側へずれやすくなります。印刷所によっては表紙込み40P前後が上限なので、入稿先の条件を確認してください。");
+    if (a.overlap) warn("内容の区切りが重なっているページがあります(下の行の内容を優先して表示しています)。");
+    if (a.outOfRange) warn("本文のページ数(" + n + "P)を超える区切りがあります。");
+
+    $("readNote").textContent = state.dir === "right"
+      ? "右綴じ: 見開きは右から左へ読みます(奇数ページが左側)。"
+      : "左綴じ: 見開きは左から右へ読みます(奇数ページが右側)。";
+
+    var box = $("spreads"); box.innerHTML = "";
+    spreadList().forEach(function (pr) {
+      var names = pr.map(slotName).filter(Boolean);
+      var sp = el("div", { class: "spread" + (state.dir === "right" ? " rtl" : ""), role: "group", "aria-label": (names.length > 1 ? "見開き " : "") + names.join("・") });
+      sp.appendChild(pageCell(pr[0], a)); sp.appendChild(pageCell(pr[1], a));
+      box.appendChild(sp);
+    });
+
+    var lg = $("legend"); lg.innerHTML = "";
+    var seen = {};
+    state.segs.forEach(function (g) {
+      var a1 = Math.min(g.from, g.to), b1 = Math.max(g.from, g.to);
+      var key = g.label + "|" + g.color + "|" + a1 + "|" + b1; if (seen[key]) return; seen[key] = 1;
+      var s = el("span"); var i = el("i"); i.style.background = colorOf(g.color); s.appendChild(i);
+      s.appendChild(document.createTextNode((g.label || "(無題)") + "(P" + a1 + (b1 !== a1 ? "〜" + b1 : "") + ")"));
+      lg.appendChild(s);
+    });
+    renderImposition(a);
+    
+    save();
+  }
+
+  // ===== コピー本の面付け表(中綴じ) =====
+  function renderImposition(a) {
+    var sec = $("imp-section"), out = $("impOut"), desc = $("impDesc");
+    out.innerHTML = "";
+    sec.classList.add("no-print");
+    if (state.binding !== "saddle") { desc.textContent = "綴じ方を「中綴じ」にすると、家庭用プリンターでコピー本を作るときの面付け表(どのページを同じ紙に印刷するか)を表示します。"; return; }
+    var coverIn = state.cover, T = totalPages();
+    if (state.pages % 2 === 1 || T % 4 !== 0) { desc.textContent = "面付けするには、" + (coverIn ? "表紙込みの" : "") + "総ページ数を4の倍数にしてください(今は" + T + "P)。"; return; }
+    sec.classList.remove("no-print");
+    var S = T / 4;
+    desc.textContent = "紙" + S + "枚を重ねて二つ折りにし、中央をホチキスで留めると本の順番になります。各紙の「表面」と「裏面」に、下の並びで2ページずつ印刷してください(" + (state.dir === "right" ? "右綴じ" : "左綴じ") + "・" + (coverIn ? "表紙も同じ紙" : "本文のみ。表紙は別に用意") + ")。1枚目がいちばん外側です。";
+    function cellText(no) {
+      if (coverIn && no <= 2) return no === 1 ? "表1\n表紙" : "表2\n表紙の裏";
+      if (coverIn && no >= T - 1) return no === T ? "表4\n裏表紙" : "表3\n裏表紙の裏";
+      var inner = coverIn ? no - 2 : no, info = a.map[inner];
+      return "P" + inner + (info ? "\n" + info.label : "");
+    }
+    var tbl = el("table", { class: "imp" });
+    tbl.appendChild(el("caption", { class: "sr-only" }, "コピー本の面付け表"));
+    var hd = el("tr");
+    ["紙", "表面 左", "表面 右", "裏面 左", "裏面 右"].forEach(function (h) { hd.appendChild(el("th", { scope: "col" }, h)); });
+    var thead = el("thead"); thead.appendChild(hd); tbl.appendChild(thead);
+    var tb = el("tbody");
+    for (var i = 0; i < S; i++) {
+      // 通し番号(表紙込みなら表1=1)で、表面(外側)の左右と裏面(内側)の左右に来るページ
+      var cells = state.dir === "left" ? [T - 2 * i, 2 * i + 1, 2 * i + 2, T - 2 * i - 1] : [2 * i + 1, T - 2 * i, T - 2 * i - 1, 2 * i + 2];
+      var tr = el("tr");
+      tr.appendChild(el("th", { scope: "row" }, (i + 1) + "枚目"));
+      cells.forEach(function (no) { tr.appendChild(el("td", null, cellText(no))); });
+      tb.appendChild(tr);
+    }
+    tbl.appendChild(tb);
+    var wrap = el("div", { class: "table-wrap" }); wrap.appendChild(tbl); out.appendChild(wrap);
+    out.appendChild(el("p", { class: "fine" }, "「表面」は本の外側を向く面です。家庭用プリンターで両面印刷するときは、横向きの紙なら「短辺とじ」を選ぶと裏面の向きが合うことが多いです。最初の1枚で向きを確かめてから印刷してください。"));
+  }
+
+  // ===== 区切りの入力欄 =====
+  function renderSegRows(focusId) {
+    var box = $("segRows"); box.innerHTML = "";
+    state.segs.forEach(function (g, i) {
+      var row = el("div", { class: "seg-row" });
+      function wrap(cls, lbl, input) { var l = el("label", { class: cls }); l.appendChild(el("span", { class: "mlbl", "aria-hidden": "true" }, lbl)); l.appendChild(input); return l; }
+      var f = el("input", { type: "number", min: "1", max: "1000", inputmode: "numeric", id: "sf-" + i, "aria-label": (i + 1) + "行目の開始ページ" }); f.value = g.from;
+      var t = el("input", { type: "number", min: "1", max: "1000", inputmode: "numeric", "aria-label": (i + 1) + "行目の終了ページ" }); t.value = g.to;
+      var lb = el("input", { type: "text", maxlength: "30", placeholder: "例) 本編", "aria-label": (i + 1) + "行目の内容" }); lb.value = g.label;
+      var c = el("select", { "aria-label": (i + 1) + "行目の色" });
+      COLORS.forEach(function (x) { c.appendChild(el("option", { value: x.key }, x.label)); }); c.value = g.color;
+      var rm = el("button", { type: "button", class: "rm", id: "sr-" + i, "aria-label": (i + 1) + "行目を削除" }, "×");
+      f.addEventListener("input", function () { var v = int(f.value, NaN); if (v >= 1 && v <= 1000) { g.from = v; render(); } });
+      t.addEventListener("input", function () { var v = int(t.value, NaN); if (v >= 1 && v <= 1000) { g.to = v; render(); } });
+      f.addEventListener("change", function () { f.value = g.from; refreshProgress(); });
+      t.addEventListener("change", function () { t.value = g.to; refreshProgress(); });
+      lb.addEventListener("input", function () { g.label = lb.value.slice(0, 30); render(); });
+      lb.addEventListener("change", function () { refreshProgress(); });
+      c.addEventListener("change", function () { g.color = c.value; render(); });
+      rm.addEventListener("click", function () {
+        state.segs.splice(i, 1);
+        renderSegRows(state.segs.length ? "sr-" + Math.min(i, state.segs.length - 1) : "addSeg"); render();
+      });
+      row.appendChild(wrap("f-from", "開始P", f)); row.appendChild(wrap("f-to", "終了P", t)); row.appendChild(wrap("f-lab", "内容", lb)); row.appendChild(wrap("f-col", "色", c)); row.appendChild(rm);
+      box.appendChild(row);
+    });
+    refreshProgress();
+    if (focusId && $(focusId)) $(focusId).focus();
+  }
+
+  function nextFree() { var a = assign(); for (var p = 1; p <= state.pages; p++) if (!a.map[p]) return p; return state.pages; }
+  function newSeg(from, to, label, color) { return { from: from, to: to, label: label, color: color, who: "", due: "", status: "todo" }; }
+  $("addSeg").addEventListener("click", function () {
+    if (state.segs.length >= 100) return;
+    var p = nextFree(), used = state.segs.map(function (g) { return g.color; });
+    var col = (COLORS.filter(function (c) { return used.indexOf(c.key) < 0 && c.key !== "white"; })[0] || COLORS[0]).key;
+    state.segs.push(newSeg(p, p, "", col));
+    renderSegRows("sf-" + (state.segs.length - 1)); render();
+  });
+  $("templateBtn").addEventListener("click", function () {
+    var n = state.pages;
+    if (n < 6) { alert("本文が6P以上のときに使えます。"); return; }
+    var isDefault = state.segs.length === 1 && state.segs[0].label === "本文" && !state.segs[0].who;
+    if (state.segs.length && !isDefault && !confirm("今の区切りを、よくある構成(扉・目次・本編・あとがき・奥付)に置き換えますか?")) return;
+    state.segs = [newSeg(1, 1, "扉", "lav"), newSeg(2, 2, "目次", "gray"), newSeg(3, n - 2, "本編", "sky"), newSeg(n - 1, n - 1, "あとがき", "lemon"), newSeg(n, n, "奥付", "gray")];
+    renderSegRows(); render();
+  });
+  $("resetBtn").addEventListener("click", function () {
+    if (!confirm("入力をすべてリセットしますか?")) return;
+    state = blank(); syncForm(); renderSegRows(); render();
+  });
+
+  var committedPages = state.pages;
+  function syncForm() {
+    $("in-pages").value = state.pages; $("in-binding").value = state.binding; $("in-title").value = state.title; $("opt-cover").checked = state.cover;
+    document.querySelectorAll('input[name="dir"]').forEach(function (r) { r.checked = r.value === state.dir; r.parentNode.classList.toggle("on", r.checked); });
+    committedPages = state.pages;
+  }
+  // 入力中は表示だけ更新し、確定(フォーカスを外す・Enter)したときに「本文全体」の区切りを新しいページ数に合わせる
+  $("in-pages").addEventListener("input", function (e) {
+    var v = int(e.target.value, NaN);
+    if (v >= 2 && v <= 1000) { state.pages = v; render(); }
+  });
+  $("in-pages").addEventListener("change", function (e) {
+    e.target.value = state.pages;
+    var v = state.pages, old = committedPages;
+    if (v === old) return;
+    state.segs.forEach(function (g) { if (Math.min(g.from, g.to) === 1 && Math.max(g.from, g.to) === old) { if (g.to >= g.from) g.to = v; else g.from = v; } });
+    committedPages = v;
+    renderSegRows(); render();
+  });
+  $("in-binding").addEventListener("change", function (e) { state.binding = e.target.value; render(); });
+  $("in-title").addEventListener("input", function (e) { state.title = e.target.value.slice(0, 40); render(); });
+  $("opt-cover").addEventListener("change", function (e) { state.cover = e.target.checked; render(); });
+  document.querySelectorAll('input[name="dir"]').forEach(function (r) { r.addEventListener("change", function () { state.dir = r.value; syncForm(); render(); }); });
+
+  // ===== 印刷・テキスト =====
+  $("printBtn").addEventListener("click", function () { track("print_click", {}); window.print(); });
+  function textOut() {
+    var a = assign(), lines = [];
+    lines.push("【台割】" + (state.title ? state.title + " " : "") + "本文" + state.pages + "P" + (state.cover ? "(表紙込み" + totalPages() + "P)" : "") + "・" + (state.binding === "saddle" ? "中綴じ" : "無線綴じ") + "・" + (state.dir === "right" ? "右綴じ" : "左綴じ"));
+    var p = 1;
+    while (p <= state.pages) {
+      var info = a.map[p], q = p;
+      while (q + 1 <= state.pages && ((a.map[q + 1] && info && a.map[q + 1].idx === info.idx) || (!a.map[q + 1] && !info))) q++;
+      lines.push("P" + p + (q !== p ? "〜" + q : "") + " " + (info ? info.label + extraText(info.idx) : "未定"));
+      p = q + 1;
+    }
+    return lines.join("\n");
+  }
+  var copyTimer = null;
+  $("copyBtn").addEventListener("click", function () {
+    var text = textOut(), st = $("copyStatus");
+    function say(m) { st.textContent = m; clearTimeout(copyTimer); copyTimer = setTimeout(function () { st.textContent = ""; }, 4000); }
+    function done() { say("コピーしました。"); track("text_copy", {}); }
+    function fallback() { var ta = el("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select(); var ok = false; try { ok = document.execCommand("copy"); } catch (e) {} document.body.removeChild(ta); if (ok) done(); else say("コピーできませんでした。"); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+  });
+
+  // ===== 自動保存 =====
+  var AUTO_KEY = "daiwari_auto_v1";
+  function save() { try { localStorage.setItem(AUTO_KEY, JSON.stringify(state)); } catch (e) {} }
+
+  
+
+  if (EDITION !== "full") {
+    $("privacyNote").innerHTML = '入力内容はどこにも送信されません(このブラウザ内にだけ自動保存されます)。このページでは利用状況の把握のためにアクセス解析(Google Analytics)を使っています。<a href="https://policies.google.com/technologies/partner-sites?hl=ja" target="_blank" rel="noopener">Googleによるデータの使用について</a>';
+  }
+
+  try { var saved = JSON.parse(localStorage.getItem(AUTO_KEY) || "null"); if (saved) state = sanitize(saved); } catch (e) { try { localStorage.removeItem(AUTO_KEY); } catch (e2) {} }
+  syncForm(); renderSegRows(); render();
+})();
+</script>
+</body>
+</html>
