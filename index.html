@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<meta charset="UTF-8">
 <script>
   (function() {
     var GA_ID = 'G-D01C6ZTRMJ';
@@ -23,7 +24,6 @@
     });
   })();
 </script>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="同人誌・コピー本の台割表を無料で作成。本文のページ数と扉・目次・本編・あとがき・奥付などの区切りを入れるだけで、右綴じ・左綴じの見開き台割を色分け表示。中綴じコピー本の面付け表(どのページを同じ紙に印刷するか)も無料で出せます。印刷して台割表テンプレートの代わりに。登録不要。">
 <link rel="canonical" href="https://uuhai0625.github.io/daiwari-maker/">
@@ -133,6 +133,10 @@
     section.card { padding: 16px 14px; }
     .spreads { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
   }
+  .guide { font-size: .88rem; }
+  .guide h3 { font-size: .95rem; margin: 14px 0 4px; }
+  .guide ul, .guide ol { padding-left: 1.3em; margin: 6px 0; }
+  .guide li { margin: 4px 0; }
   @media print {
     header, .no-print, #pro-section, footer, .btn-row, .status { display: none !important; }
     body { background: #fff; }
@@ -235,12 +239,25 @@
         <li><strong>複数冊の保存</strong>: 新刊・既刊・合同誌など、台割を名前をつけて保存・呼び出し</li>
       </ul>
 <!--UPSELL_ASSURE_START--><ul class="upsell-assure" aria-label="買い切り版について"><li>¥100(税込)の1回払い・月額なし</li><li>パソコン向けのHTMLファイル(スマホでは開けない機種あり)</li><li>ネットにつながっていなくても動く</li><li>BOOTHで購入(クレジットカード・楽天ペイは手数料なし、コンビニ・銀行払いは別途手数料)</li></ul><!--UPSELL_ASSURE_END-->
-      <a class="buy-btn" href="https://uuhai0625.booth.pm/items/8932411" id="buyLink" target="_blank" rel="noopener">買い切り版を見る(BOOTH・新しいタブ)</a><p class="set-note no-print" style="margin:.75rem 0 0;font-size:.9rem;text-align:center">このツールを含むセットもあります: <a href="https://uuhai0625.booth.pm/items/9123926" id="setLink" target="_blank" rel="noopener" style="display:inline-block;padding:.4rem 0">同人誌づくり8本セット ¥500(1本ずつなら¥800・BOOTH・新しいタブ)</a></p><!--UPSELL_TERMS_START--><p class="upsell-terms">販売者の情報・返品などの販売条件は、BOOTHの商品ページでご確認ください。BOOTHでの購入にはpixivのアカウントが必要です。</p><!--UPSELL_TERMS_END-->
+      <a class="buy-btn" href="https://uuhai0625.booth.pm/items/8932411" id="buyLink" target="_blank" rel="noopener">買い切り版を見る(BOOTH・新しいタブ)</a><!--UPSELL_TERMS_START--><p class="upsell-terms">販売者の情報・返品などの販売条件は、BOOTHの商品ページでご確認ください。BOOTHでの購入にはpixivのアカウントが必要です。</p><!--UPSELL_TERMS_END--><p class="set-note no-print" style="margin:.75rem 0 0;font-size:.9rem;text-align:center">このツールを含むセットもあります: <a href="https://uuhai0625.booth.pm/items/9123926" id="setLink" target="_blank" rel="noopener" style="display:inline-block;padding:.4rem 0">同人誌づくり8本セット ¥500(1本ずつなら¥800・BOOTH・新しいタブ)</a></p>
     </div>
   </section>
 
   
 
+  <section class="card guide no-print" id="guide">
+    <h2>台割の作り方</h2>
+    <p>台割(だいわり)は、本の何ページ目に何が入るかを一覧にした設計図です。</p>
+    <ol>
+      <li><strong>本文のページ数を入れる</strong>: 表紙を除いた本文のページ数を偶数で入れます。</li>
+      <li><strong>綴じ方と綴じ方向を選ぶ</strong>: 無線綴じか中綴じか、右綴じ(縦書き・漫画)か左綴じ(横書き)かを選びます。表紙(表1〜表4)を台割に入れるかはチェックで切り替えます。</li>
+      <li><strong>内容の区切りを入れる</strong>: 開始P・終了P・内容を行ごとに入れます。「よくある構成を入れる」を押すと、扉・目次・本編・あとがき・奥付が入ります。</li>
+      <li><strong>台割表を確かめる</strong>: 見開きの並びと「未定」のページ、ページ数の注意を見て直します。</li>
+      <li><strong>印刷かコピーで残す</strong>: 「印刷する」か「テキストでコピー」で書き出します。</li>
+    </ol>
+    <h3>面付けのやり方(コピー本)</h3>
+    <p>中綴じのコピー本は、紙を重ねて二つ折りにして作ります。1枚の紙に4ページが載るので、紙の上ではページ番号が順番に並びません(いちばん外側の紙には最初と最後のページが来ます)。1枚が4ページ分なので、中綴じの総ページ数は4の倍数にします。綴じ方を「中綴じ」にし、総ページ数が4の倍数になると面付け表が出るので、紙ごとに表面・裏面の左右に書かれたページを両面印刷し、重ねて二つ折りにして中央をホチキスで留めます。無線綴じの本文は4の倍数で受け付ける印刷所が多く、2の倍数でよい印刷所もあります。条件は印刷所ごとに違うので、入稿先の案内を確認してください。</p>
+  </section>
 </main>
 
 <!--ANSHIN_START-->
